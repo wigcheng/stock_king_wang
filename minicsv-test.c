@@ -1,19 +1,29 @@
-
 #include <stdio.h>
-
+#include <stdlib.h>
 #include "minicsv.h"
+
+
+static int code;
 
 static void
 display_cols(char * const * const cols, const size_t cols_count)
 {
+
     size_t i = (size_t) 0U;
+	char code_str[8]={0};
+	sprintf(code_str,"%d",code);
 
     while (i < cols_count) {
         if (i != (size_t) 0U) {
             putchar('\t');
         }
-        printf("[%s]", cols[i]);
-        i++;
+		if(i==0){
+			if(strcmp(code_str,cols[i])!=0){
+				break;
+			}
+		}
+		printf("[%s]", cols[i]);
+		i++;
     }
     putchar('\n');
 }
@@ -21,35 +31,36 @@ display_cols(char * const * const cols, const size_t cols_count)
 int
 main(int argc, char *argv[])
 {
+	
     char  *cols[10];
-    char   buf[] = "first,line,has,\"comas,\"\"escaped\"\" characters\",and,\"multiples\r\nlines\"\r\n"
-        "second,line,\"has\",,empty,,,,columns\r\nremainder";
-    char  *r = buf;
+    char  *r;
     size_t cols_count;
 	int recordcnt=0;
 	char tmp[1024]={0x0};
 	FILE *in=fopen(argv[1],"r");
 	
-	printf("test chinese =%s\n","測");
-
 	if(in==NULL)
 	{
 		perror("File open error");
 		return 1;
 	}
+
+	printf("Please input your code:");
+	scanf("%d",&code);
+	
 	while(fgets(tmp,sizeof(tmp),in)!=0) /* read a record */
 	{
 		int i=0;
 		recordcnt++;
-		printf("Record number: %d\n",recordcnt);
+		//printf("Record number: %d\n",recordcnt);
 
 		r = minicsv_parse_line(tmp, cols, &cols_count, sizeof cols / sizeof cols[0]);
 		display_cols(cols, cols_count);
 
-		r = minicsv_parse_line(tmp, cols, &cols_count, sizeof cols / sizeof cols[0]);
-		display_cols(cols, cols_count);
+		//r = minicsv_parse_line(tmp, cols, &cols_count, sizeof cols / sizeof cols[0]);
+		//display_cols(cols, cols_count);
 
-		printf("Remainder: [%s]\n", tmp);
+		//printf("Remainder: [%s]\n", tmp);
 	}
 
 	fclose(in);
