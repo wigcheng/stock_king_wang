@@ -22,10 +22,10 @@ display_cols(char * const * const cols, const size_t cols_count)
 				break;
 			}
 		}
-		printf("[%s]", cols[i]);
+		printf("%s", cols[i]);
 		i++;
     }
-    putchar('\n');
+    //putchar('\n');
 }
 
 int
@@ -45,8 +45,8 @@ main(int argc, char *argv[])
 		return 1;
 	}
 
-	printf("Please input your code:");
-	scanf("%d",&code);
+	sprintf(tmp,"%s",argv[2]);
+	code=atoi(tmp);
 	
 	while(fgets(tmp,sizeof(tmp),in)!=0) /* read a record */
 	{
