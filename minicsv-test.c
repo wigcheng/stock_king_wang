@@ -3,7 +3,7 @@
 #include "minicsv.h"
 
 
-static int code;
+static char code[32]={0};
 
 static void
 display_cols(char * const * const cols, const size_t cols_count)
@@ -11,7 +11,7 @@ display_cols(char * const * const cols, const size_t cols_count)
 
     size_t i = (size_t) 0U;
 	char code_str[8]={0};
-	sprintf(code_str,"%d",code);
+	sprintf(code_str,"%s",code);
 
     while (i < cols_count) {
         if (i != (size_t) 0U) {
@@ -36,7 +36,7 @@ main(int argc, char *argv[])
     char  *r;
     size_t cols_count;
 	int recordcnt=0;
-	char tmp[1024]={0x0};
+	char tmp[512]={0x0};
 	FILE *in=fopen(argv[1],"r");
 	
 	if(in==NULL)
@@ -45,8 +45,7 @@ main(int argc, char *argv[])
 		return 1;
 	}
 
-	sprintf(tmp,"%s",argv[2]);
-	code=atoi(tmp);
+	sprintf(code,"%s",argv[2]);
 	
 	while(fgets(tmp,sizeof(tmp),in)!=0) /* read a record */
 	{
