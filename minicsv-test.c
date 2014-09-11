@@ -55,7 +55,6 @@ main(int argc, char *argv[])
 	int recordcnt=0;
 	char tmp[1024]={0x0};
 	FILE *in=(FILE*)NULL;
-	FILE *in=fopen(argv[1],"r");
 	
 	sprintf(tmp,"%s",argv[1]);
 	if(strcmp(tmp,"-h")==0)
@@ -68,9 +67,6 @@ main(int argc, char *argv[])
 
 	}
 	else if(strcmp(tmp,"-s")==0)
-	sprintf(code,"%s",argv[2]);
-	
-	while(fgets(tmp,sizeof(tmp),in)!=0) /* read a record */
 	{
 		memset(tmp,0x00,sizeof(tmp));
 		in=fopen(argv[2],"r");
@@ -81,8 +77,7 @@ main(int argc, char *argv[])
 			return 1;
 		}
 
-		sprintf(tmp,"%s",argv[3]);
-		code=atoi(tmp);
+		sprintf(code,"%s",argv[3]);
 	
 		while(fgets(tmp,sizeof(tmp),in)!=0) /* read a record */
 		{
