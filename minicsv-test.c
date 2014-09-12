@@ -5,36 +5,55 @@
 
 
 static char code[32]={0};
+static unsigned char price_cnt=0;
 
-
-static void display_cols(char * const * const cols, const size_t cols_count);
+static void display_cols(char * const * const cols, const size_t cols_count,char* type);
 static void help_func(void);
 
 
 
 static void
-display_cols(char * const * const cols, const size_t cols_count)
+display_cols(char * const * const cols, const size_t cols_count, char* type)
 {
 	size_t i = (size_t) 0U;
 	char code_str[8]={0};
 	sprintf(code_str,"%s",code);
-	
+
 
 	while (i < cols_count) {
 		if (i != (size_t) 0U) {
 			putchar('\t');
 		}
-
-		if(i==0){
-			if(strcmp(code_str,cols[i])!=0){
+	
+		if(strcmp(type,"-s")==0)
+		{
+			if(i==0)
+			{
+				if(strcmp(code_str,cols[i])!=0)
+				{
+					break;
+				}
+			}
+		}
+		else if(strcmp(type,"-p")==0)
+		{
+			if(price_cnt<2)
+			{
+				price_cnt+=1;
 				break;
 			}
 		}
-
 		printf("%s", cols[i]);
 		i++;
 	}
-    //putchar('\n');
+
+	if(strcmp(type,"-p")==0)
+	{
+		if(price_cnt>=2)
+		{
+			putchar('\n');
+		}
+	}
 }
 
 static void
@@ -53,22 +72,17 @@ main(int argc, char *argv[])
     char  *r;
     size_t cols_count;
 	int recordcnt=0;
-	char tmp[1024]={0x0};
+	char tmp[1024]={0x0},type[4]={0x0};
 	FILE *in=(FILE*)NULL;
 	
-	sprintf(tmp,"%s",argv[1]);
-	if(strcmp(tmp,"-h")==0)
+	sprintf(type,"%s",argv[1]);
+	if(strcmp(type,"-h")==0)
 	{
 		help_func();
 		return 0;
 	}
-	else if(strcmp(tmp,"-p")==0)
+	else if(strcmp(type,"-p")==0 || strcmp(type,"-s")==0)
 	{
-
-	}
-	else if(strcmp(tmp,"-s")==0)
-	{
-		memset(tmp,0x00,sizeof(tmp));
 		in=fopen(argv[2],"r");
 	
 		if(in==NULL)
@@ -77,8 +91,11 @@ main(int argc, char *argv[])
 			return 1;
 		}
 
-		sprintf(code,"%s",argv[3]);
-	
+		if(strcmp(type,"-s")==0)
+		{
+			sprintf(code,"%s",argv[3]);
+		}
+
 		while(fgets(tmp,sizeof(tmp),in)!=0) /* read a record */
 		{
 			int i=0;
@@ -86,7 +103,7 @@ main(int argc, char *argv[])
 			//printf("Record number: %d\n",recordcnt);
 
 			r = minicsv_parse_line(tmp, cols, &cols_count, sizeof cols / sizeof cols[0]);
-			display_cols(cols, cols_count);
+			display_cols(cols, cols_count,type);
 
 			//r = minicsv_parse_line(tmp, cols, &cols_count, sizeof cols / sizeof cols[0]);
 			//display_cols(cols, cols_count);
