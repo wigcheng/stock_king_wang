@@ -4,7 +4,8 @@
 #include "minicsv.h"
 
 
-static char code[32]={0};
+static char code[16]={0};
+static char date[16]={0};
 static unsigned char price_cnt=0;
 
 static void display_cols(char * const * const cols, const size_t cols_count,char* type);
@@ -16,51 +17,44 @@ static void
 display_cols(char * const * const cols, const size_t cols_count, char* type)
 {
 	size_t i = (size_t) 0U;
-	char code_str[8]={0};
-	sprintf(code_str,"%s",code);
+	char code_str[16]={0};
 
+	if(strcmp(type,"-s")==0)
+	{
+		sprintf(code_str,"%s",code);
+	}
+	else
+	{
+		sprintf(code_str,"%s",date);
+	}
 
-	while (i < cols_count) {
-		if (i != (size_t) 0U) {
+	while (i < cols_count)
+	{
+		if (i != (size_t) 0U)
+		{
 			putchar('\t');
 		}
-	
-		if(strcmp(type,"-s")==0)
+
+		if(i==0)
 		{
-			if(i==0)
+			if(strcmp(code_str,cols[i])!=0)
 			{
-				if(strcmp(code_str,cols[i])!=0)
-				{
-					break;
-				}
-			}
-		}
-		else if(strcmp(type,"-p")==0)
-		{
-			if(price_cnt<2)
-			{
-				price_cnt+=1;
 				break;
 			}
 		}
+
 		printf("%s", cols[i]);
 		i++;
 	}
 
-	if(strcmp(type,"-p")==0)
-	{
-		if(price_cnt>=2)
-		{
-			putchar('\n');
-		}
-	}
+	//putchar('\n');
 }
 
 static void
 help_func(void)
 {
 	printf("-h: help list. ex: ./mini -h\n");
-	printf("-p: code price research. ex: ./mini -p 20140901 20140911 2349\n");
+	printf("-p: code price research. ex: ./mini -p 201409_2349.csv 2014/09/11\n");
 	printf("-s: 3 people sold research. ex: ./mini -s 20140911.csv 2349\n");
 }
 
@@ -72,6 +66,7 @@ main(int argc, char *argv[])
     char  *r;
     size_t cols_count;
 	int recordcnt=0;
+	int scan_tmp1,scan_tmp2,scan_tmp3;
 	char tmp[1024]={0x0},type[4]={0x0};
 	FILE *in=(FILE*)NULL;
 	
@@ -94,6 +89,12 @@ main(int argc, char *argv[])
 		if(strcmp(type,"-s")==0)
 		{
 			sprintf(code,"%s",argv[3]);
+		}
+		else
+		{
+			sscanf(argv[3],"%04d/%02d/%02d",&scan_tmp1,&scan_tmp2,&scan_tmp3);
+			scan_tmp1-=1911;
+			sprintf(date," %d/%02d/%02d",scan_tmp1,scan_tmp2,scan_tmp3);
 		}
 
 		while(fgets(tmp,sizeof(tmp),in)!=0) /* read a record */
